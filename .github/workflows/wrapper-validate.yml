@@ -1,0 +1,23 @@
+name: Gradle Wrapper Validation
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Проверяет gradle/wrapper/gradle-wrapper.jar и gradle-wrapper.properties,
+      # не запускает Gradle и не требует JDK/Node.
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
