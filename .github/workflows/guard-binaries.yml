@@ -4,6 +4,9 @@ on:
   pull_request:
   push:
 
+permissions:
+  contents: read
+
 jobs:
   guard-bin:
     runs-on: ubuntu-latest
@@ -17,13 +20,13 @@ jobs:
 
       - name: Fail on banned *.bin
         run: |
-          banned=""
+          hits=""
           for f in ${{ steps.changes.outputs.all_changed_files }}; do
             if echo "$f" | grep -Ei '\\.bin$' > /dev/null; then
-              banned="$banned\n$f"
+              hits="${hits}\n - ${f}"
             fi
           done
-          if [ -n "$banned" ]; then
-            echo "::error::Banned binary files detected:$banned"
+          if [ -n "$hits" ]; then
+            echo "::error::Banned binary files detected:${hits}"
             exit 1
           fi
