@@ -18,6 +18,8 @@ jobs:
           distribution: temurin
           java-version: "17"
           cache: gradle
+      - name: Make gradlew executable
+        run: chmod +x gradlew
       - name: Compute version
         if: startsWith(github.ref, 'refs/tags/')
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
