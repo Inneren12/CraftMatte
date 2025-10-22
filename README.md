@@ -1,5 +1,7 @@
 # mh-cutout
 
+![CI](https://github.com/Inneren12/CraftMatte/actions/workflows/ci.yml/badge.svg)
+
 `mh-cutout` is a standalone JVM module for background removal that exposes a stable API and a headless CLI utility. The project is organised as a Gradle multi-module build:
 
 - **cutout-core** – public data types and the `RemoveBgEngine` contract.
