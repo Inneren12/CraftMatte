@@ -1,0 +1,31 @@
+name: release-please
+
+on:
+  push:
+    branches:
+      - main     # ← replace with actual default branch if not main
+  workflow_dispatch:
+
+# Required permissions for creating PRs and pushing tags/changelog
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout is not needed; action works with GitHub API
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Release Please (manifest mode via config files)
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Do not use 'command'; manifest mode is enabled automatically
+          # when configuration files are present:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
