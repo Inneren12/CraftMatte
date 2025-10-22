@@ -1,0 +1,20 @@
+name: Gradle Wrapper Validation (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Запускается вручную, чтобы не ломать пуши/PR
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1

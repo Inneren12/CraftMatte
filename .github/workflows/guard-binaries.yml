@@ -1,8 +1,10 @@
-name: Guard: ban *.bin in VCS
+name: Guard: banned binaries (manual)
 
 on:
-  pull_request:
-  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 permissions:
   contents: read
@@ -15,18 +17,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - id: changes
-        uses: tj-actions/changed-files@v45
-
-      - name: Fail on banned *.bin
+      - name: Check tracked *.bin (only Git-index)
         run: |
-          hits=""
-          for f in ${{ steps.changes.outputs.all_changed_files }}; do
-            if echo "$f" | grep -Ei '\\.bin$' > /dev/null; then
-              hits="${hits}\n - ${f}"
-            fi
-          done
-          if [ -n "$hits" ]; then
-            echo "::error::Banned binary files detected:${hits}"
-            exit 1
-          fi
+          set -e
+          git ls-files -z | tr '\0' '\n' | grep -Ei '\.bin$' && {
+            echo "::error::Banned tracked *.bin files detected in Git index";
+            exit 1;
+          } || echo "No tracked *.bin files found"

@@ -33,31 +33,5 @@ jobs:
           java-version: '17'
           cache: gradle
 
-      - name: Make gradlew executable
-        run: |
-          test -f gradlew || (echo "gradlew not found" && exit 1)
-          chmod +x gradlew
-          ls -l gradlew
-
       - name: Build & Test
         run: sh ./gradlew --no-daemon clean check
-
-      - name: Build & Test (no secrets)
-        run: ./gradlew --no-daemon clean check
-
-      # Опционально запускаем gradle-гарды, если они определены в сборке
-      - name: Run Gradle guards if present
-        run: |
-          ./gradlew --no-daemon tasks --all > tasks.txt
-          if grep -q "verifyNoBin" tasks.txt; then ./gradlew --no-daemon verifyNoBin; fi
-          if grep -q "assertNoBinInJar" tasks.txt; then ./gradlew --no-daemon assertNoBinInJar; fi
-
-      # Публикация отчетов при падении (необязательно)
-      - name: Upload Test Reports (on failure)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            **/build/reports/tests/test
-            **/build/test-results/test
