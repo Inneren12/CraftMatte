@@ -1,25 +1,27 @@
 import org.gradle.api.GradleException
 import org.gradle.jvm.tasks.Jar
+import org.gradle.kotlin.dsl.registering
 
 plugins {
-    alias(libs.plugins.android.application) apply false
-    alias(libs.plugins.kotlin.android) apply false
     base
     kotlin("jvm") version "1.9.24" apply false
+    `maven-publish` apply false
+    application apply false
 }
 
 allprojects {
     group = "io.inneren.mh"
     version = System.getenv("VERSION") ?: "0.1.0-SNAPSHOT"
+    repositories { mavenCentral() }
 }
 
 subprojects {
-    // не пакуем *.bin внутрь наших артефактов
+    // Никогда не пакуем *.bin внутрь наших артефактов
     tasks.withType<Jar>().configureEach { exclude("**/*.bin") }
 }
 
-// Root guard: падаем ТОЛЬКО если *.bin отслеживаются Git (а не лежат в build/*)
-tasks.register("verifyNoBin") {
+// Root guard: падаем ТОЛЬКО если *.bin отслеживаются Git (игнорим build/, caches и т.п.)
+val verifyNoBin by tasks.registering {
     group = "verification"
     description = "Fail if any tracked *.bin files are present in the repository"
     doLast {
@@ -38,4 +40,8 @@ tasks.register("verifyNoBin") {
             )
         }
     }
+}
+
+tasks.matching { it.name == "check" }.configureEach {
+    dependsOn(verifyNoBin)
 }
