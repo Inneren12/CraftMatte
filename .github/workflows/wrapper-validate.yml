@@ -1,0 +1,29 @@
+name: Gradle Wrapper Validation
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Проверяет gradle/wrapper/gradle-wrapper.jar и gradle-wrapper.properties,
+      # не запускает Gradle и не требует JDK/Node.
+      - name: Check Gradle Wrapper files are present
+        run: |
+          ls -la gradle/wrapper || true
+          test -f gradle/wrapper/gradle-wrapper.jar || (echo "::error::gradle-wrapper.jar missing"; exit 1)
+          test -f gradle/wrapper/gradle-wrapper.properties || (echo "::error::gradle-wrapper.properties missing"; exit 1)
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
