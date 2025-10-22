@@ -1,5 +1,6 @@
 # --- Banned binary payloads ---
 *.bin
+!gradle/wrapper/gradle-wrapper.jar
 
 # Reserved local directories for manually provided assets
 assets/
