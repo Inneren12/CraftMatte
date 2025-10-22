@@ -33,6 +33,15 @@ jobs:
           java-version: '17'
           cache: gradle
 
+      - name: Make gradlew executable
+        run: |
+          test -f gradlew || (echo "gradlew not found" && exit 1)
+          chmod +x gradlew
+          ls -l gradlew
+
+      - name: Build & Test
+        run: sh ./gradlew --no-daemon clean check
+
       - name: Build & Test (no secrets)
         run: ./gradlew --no-daemon clean check
 
