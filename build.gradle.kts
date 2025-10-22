@@ -4,7 +4,15 @@ import org.gradle.api.Project
 import org.gradle.jvm.tasks.Jar
 
 plugins {
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
     base
+    kotlin("jvm") version "1.9.24" apply false
+}
+
+allprojects {
+    group = "io.inneren.mh"
+    version = System.getenv("VERSION") ?: "0.1.0-SNAPSHOT"
 }
 
 fun Project.configureBinGuards() {

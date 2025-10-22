@@ -4,3 +4,7 @@
 # Reserved local directories for manually provided assets
 assets/
 local-assets/
+
+# Gradle build outputs
+.gradle/
+**/build/
