@@ -1,0 +1,23 @@
+name: Guard: banned binaries (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard-bin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check tracked *.bin (only Git-index)
+        run: |
+          set -e
+          git ls-files -z | tr '\0' '\n' | grep -Ei '\.bin$' && {
+            echo "::error::Banned tracked *.bin files detected in Git index";
+            exit 1;
+          } || echo "No tracked *.bin files found"
