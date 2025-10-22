@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build & Test (no secrets)
+        run: ./gradlew --no-daemon clean check
+
+      # Независимая проверка: запрещаем ТОЛЬКО закоммиченные *.bin
+      - name: Guard tracked *.bin via Git (fail if any)
+        run: |
+          tracked_bins=$(git ls-files -z | tr '\0' '\n' | grep -Ei '\\.bin$' || true)
+          if [ -n "$tracked_bins" ]; then
+            echo "::error::Banned tracked *.bin files detected:"
+            printf '%s\n' "$tracked_bins"
+            exit 1
+          else
+            echo "No tracked *.bin files found"
+          fi
+
+      - name: Upload Test Reports (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: '**/build/test-results/test'
