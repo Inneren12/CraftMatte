@@ -1,0 +1,6 @@
+# --- Banned binary payloads ---
+*.bin
+
+# Reserved local directories for manually provided assets
+assets/
+local-assets/
