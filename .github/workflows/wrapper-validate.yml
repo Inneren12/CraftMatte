@@ -16,5 +16,17 @@ jobs:
           fetch-depth: 0
 
       # Запускается вручную, чтобы не ломать пуши/PR
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
+      - name: Inspect wrapper files (debug)
+        run: |
+          echo "== ls gradle/wrapper =="
+          ls -la gradle/wrapper || true
+          echo "== properties =="
+          test -f gradle/wrapper/gradle-wrapper.properties && cat gradle/wrapper/gradle-wrapper.properties || echo "no properties"
+          echo "== jar checksum =="
+          test -f gradle/wrapper/gradle-wrapper.jar && (sha256sum gradle/wrapper/gradle-wrapper.jar || shasum -a 256 gradle/wrapper/gradle-wrapper.jar) || echo "no jar"
+
+      - name: Validate Gradle Wrapper (maintained action)
+        uses: gradle/actions/wrapper-validation@v3
+        with:
+          min-wrapper-count: 1
+          allow-snapshots: false
